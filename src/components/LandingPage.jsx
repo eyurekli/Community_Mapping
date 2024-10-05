@@ -1,5 +1,6 @@
 import "../css/LandingPage.css"
 
+// eslint-disable-next-line react/prop-types
 function LandingPage({ onToggleDisplay }) {
     
     const logUserCoordinates = () => {
