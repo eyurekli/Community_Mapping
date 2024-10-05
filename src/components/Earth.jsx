@@ -69,6 +69,7 @@ const Earth = () => {
         console.log(data)
     }
 
+    //Written by GPT
     const getFireData = async () => { 
         const res = await fetch('https://eonet.gsfc.nasa.gov/api/v2.1/events');
         const data = await res.json();
@@ -77,7 +78,7 @@ const Earth = () => {
         event.geometries.map(geometry => ({
             lat: geometry.coordinates[1], 
             lng: geometry.coordinates[0], 
-            intensity: Math.random() // Optional: Use a random value or get it from the API data if available
+            intensity: Math.random()
         }))
         );
         setEventsData(formattedFireData);
@@ -264,12 +265,18 @@ const Earth = () => {
                 options={options}
                 polygonSideColor={() => `rgba(0, 0, 0, 0)`}
                 
+                //Written by GPT
                 pointsData={activeDisaster === 'fire' ? eventsData : []}
                 pointLat={(d) => d.lat}
                 pointLng={(d) => d.lng}
-                pointColor={(d) => `rgba(255, 69, 0, ${Math.min(d.intensity + 0.3, 1)})`} // Fiery orange
-                pointAltitude={() => 0.001} // Optional: vary altitude slightly based on intensity
-                pointRadius={0.3} // Adjust size as needed
+                pointColor={(d) => `rgba(255, 69, 0, ${Math.min(d.intensity + 0.3, 1)})`} 
+                pointAltitude={() => 0.015} 
+                pointRadius={0.4}
+                pointsMerge={false} // Required for onPointClick to work
+                onPointClick={(point, event, { lat, lng, altitude }) => {
+                    console.log('Point clicked:', point);
+                    console.log('Coordinates:', { lat, lng, altitude });
+                }}
           />
         </div>
         
