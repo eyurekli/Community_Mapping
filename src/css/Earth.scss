@@ -1,0 +1,55 @@
+.earth{
+    background-image: url("../imgs/space.jpg");
+    
+    height: 100%;
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    .earth-options{
+        height: 10vh;
+        background-color: transparent;
+        width: 100vw;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 2rem;
+        gap: 1rem;
+
+        span{
+            display: flex;
+            gap: rem;
+            border: 1px solid red;
+            padding: 0.5rem;
+            border-radius: 50%;
+            border: 1px solid white;
+            transition: all 0.1s ease-in-out;
+
+
+            &:hover{
+                background-color: #0b3d91;
+                color: white;
+                cursor: pointer;
+            }
+
+
+            .icon{
+                height: 30px;
+                width: 30px;
+            }
+        }
+    }
+
+    .earth-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 90vh;
+    }
+
+    .hovered-country{
+        cursor: pointer;
+    }
+}
+

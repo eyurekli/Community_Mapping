@@ -1,7 +1,7 @@
 
 import './App.css'
-import LandingPage from './components/LandingPage'
 import Earth from './components/Earth'
+import LandingPage from './components/LandingPage'
 import { useState } from 'react';
 
 function App() {
