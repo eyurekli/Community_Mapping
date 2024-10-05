@@ -7,6 +7,20 @@
     align-items: center;
     flex-direction: column;
 
+    .dashboard {
+        position: absolute;
+        height: 70%;
+        width: 20%;
+        top: 50%;
+        right: 0;
+        margin-right: 2rem;
+        transform: translateY(-50%);
+        background-color: rgb(67, 115, 188);
+        border-radius: 1rem;
+        z-index: 9999999;
+    }
+    
+
     .earth-options{
         position: absolute;
         z-index: 9999;
@@ -35,8 +49,6 @@
                 
 
                 &:hover{
-                    background-color: #0b3d91;
-                    color: white;
                     cursor: pointer;
                 }
 

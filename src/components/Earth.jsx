@@ -17,6 +17,7 @@ import { MdOutlineLocationOn } from "react-icons/md";
 import { FaFire } from "react-icons/fa";
 import { FaVolcano } from "react-icons/fa6";
 import { FaPooStorm } from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
 
 
 
@@ -39,7 +40,16 @@ const Earth = () => {
     const world = useRef()
     const [activeDisaster, setActiveDisaster] = useState('');
     const [selectedCountry, setSelectedCountry] = useState(null);
+    const [fireEventsData, setFireEventsData] = useState([]);
+    const [stormEventsData, setStormEventsData] = useState([]);
+    const [selectedFireEvent, setSelectedFireEvent] = useState(null);
+    const [dashboardActive, setDashboardActive] = useState(true)
     
+
+
+    const handleFireEventClick = (fireEvent) => {
+        setSelectedFireEvent(fireEvent);
+    };
 
     const handleActiveDisaster = (buttonClass) => {
         setActiveDisaster(buttonClass);
@@ -59,7 +69,7 @@ const Earth = () => {
 
     const [eventsData, setEventsData] = useState([])
 
-    const colorInterpolator = t => `rgba(255,100,50,${Math.sqrt(1-t)})`;
+    const colorInterpolator = t => `rgba(88, 82, 153,${Math.sqrt(1-t)})`;
 
 
     const getData = async () => { 
@@ -73,7 +83,13 @@ const Earth = () => {
     const getFireData = async () => { 
         const res = await fetch('https://eonet.gsfc.nasa.gov/api/v2.1/events');
         const data = await res.json();
-        const fireEvents = data.events.filter(event => event.categories.some(category => category.title === 'Wildfires'));
+    
+        setEventsData(data.events);
+    
+        const fireEvents = data.events.filter(event => 
+            event.categories.some(category => category.title === 'Wildfires')
+        );
+    
         const formattedFireData = fireEvents.flatMap(event => 
         event.geometries.map(geometry => ({
             lat: geometry.coordinates[1], 
@@ -81,13 +97,13 @@ const Earth = () => {
             intensity: Math.random()
         }))
         );
-        setEventsData(formattedFireData);
-        console.log(formattedFireData);
-    }
 
+        setStormEventsData(formattedStormData);
+    }
+    
     useEffect(() => {
-        getFireData();
-    },[])
+        getData(); 
+    }, []);
 
     useEffect(() => {
         const updateDimensions = () => {
@@ -112,7 +128,6 @@ const Earth = () => {
         repeatPeriod: Math.random() * 2000 + 200
     }));
     
-
 
     const options = {
         textureQuality: 100,
@@ -196,8 +211,19 @@ const Earth = () => {
     };
 
 
+    const handleDashboard = (condition) => {
+        setDashboardActive(!dashboardActive)
+        console.log("widhaiwbduwia");
+    }
+
   return (
     <div className='earth'>
+
+        {dashboardActive && (
+            <div className="dashboard">
+                <span onClick={handleDashboard}>X</span>
+            </div>
+        )}
         <div className="earth-options">
             <div className="disaster-options">
             <span 
@@ -223,6 +249,8 @@ const Earth = () => {
                 <span onClick={handleGlobeImageLight}><MdOutlineLightMode className='icon'/></span>
                 <span onClick={handleGlobeImageDark}><MdOutlineDarkMode className='icon'/></span>
                 <span onClick={handleLocation}><MdOutlineLocationOn className='icon'/></span>
+                <span onClick={handleDashboard}><MdDashboard className='icon'/></span>
+
             </div>
            
 
@@ -231,8 +259,8 @@ const Earth = () => {
         <div className="earth-container">
             
 
-            <Globe
-                ref = {world}
+        <Globe
+                ref={world}
                 className={`earth ${hoveredCountry != null ? 'hovered-country' : ''}`}             
                 height={earthHeight}
                 width={earthWidth}
@@ -258,10 +286,8 @@ const Earth = () => {
                     return `<b>${coordinates.ADMIN} (${coordinates.ISO_A2})</b>`;
                 }}
                 onPolygonClick={(polygon, event, { lat, lng, altitude }) => {
-                   
-                      handlePolygonClick(polygon, { lat, lng, altitude });
-                    
-                  }}
+                    handlePolygonClick(polygon, { lat, lng, altitude });
+                }}
                 options={options}
                 polygonSideColor={() => `rgba(0, 0, 0, 0)`}
                 
