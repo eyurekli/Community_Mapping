@@ -72,37 +72,29 @@ const Earth = () => {
     const colorInterpolator = t => `rgba(88, 82, 153,${Math.sqrt(1-t)})`;
 
 
-    const getData = async () => { 
-        const res = await fetch('https://eonet.gsfc.nasa.gov/api/v2.1/events')
-        const data = await res.json()
-        setEventsData(data.events)
-        console.log(data)
-    }
-
-    //Written by GPT
-    const getFireData = async () => { 
+    const getAllData = async () => { 
         const res = await fetch('https://eonet.gsfc.nasa.gov/api/v2.1/events');
         const data = await res.json();
-    
+        
         setEventsData(data.events);
-    
+        
         const fireEvents = data.events.filter(event => 
             event.categories.some(category => category.title === 'Wildfires')
         );
-    
+
         const formattedFireData = fireEvents.flatMap(event => 
-        event.geometries.map(geometry => ({
-            lat: geometry.coordinates[1], 
-            lng: geometry.coordinates[0], 
-            intensity: Math.random()
-        }))
+            event.geometries.map(geometry => ({
+                lat: geometry.coordinates[1], 
+                lng: geometry.coordinates[0], 
+                intensity: Math.random()
+            }))
         );
 
-        setStormEventsData(formattedStormData);
-    }
-    
+        setFireEventsData(formattedFireData);
+    };
+
     useEffect(() => {
-        getData(); 
+        getAllData(); 
     }, []);
 
     useEffect(() => {
@@ -221,7 +213,7 @@ const Earth = () => {
 
         {dashboardActive && (
             <div className="dashboard">
-                <span onClick={handleDashboard}>X</span>
+                <span className='x-button' onClick={handleDashboard}>X</span>
             </div>
         )}
         <div className="earth-options">
@@ -292,13 +284,13 @@ const Earth = () => {
                 polygonSideColor={() => `rgba(0, 0, 0, 0)`}
                 
                 //Written by GPT
-                pointsData={activeDisaster === 'fire' ? eventsData : []}
+                pointsData={activeDisaster === 'fire' ? fireEventsData : []}
                 pointLat={(d) => d.lat}
                 pointLng={(d) => d.lng}
                 pointColor={(d) => `rgba(255, 69, 0, ${Math.min(d.intensity + 0.3, 1)})`} 
                 pointAltitude={() => 0.015} 
                 pointRadius={0.4}
-                pointsMerge={false} // Required for onPointClick to work
+                pointsMerge={false} 
                 onPointClick={(point, event, { lat, lng, altitude }) => {
                     console.log('Point clicked:', point);
                     console.log('Coordinates:', { lat, lng, altitude });
