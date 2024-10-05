@@ -1,13 +1,13 @@
 
 import './App.css'
-import Earth from './components/Earth'
+import LandingPage from './components/LandingPage'
 
 function App() {
 
   return (
     
     <div className="">
-      
+      <LandingPage/>
     </div>
   )
 }
