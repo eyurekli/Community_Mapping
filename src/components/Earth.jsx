@@ -38,14 +38,29 @@ const Earth = () => {
     const [currGlobeImage, setCurrGlobeImage] = useState(EarthImageDark);
     const world = useRef()
     const [activeDisaster, setActiveDisaster] = useState('');
+    const [selectedCountry, setSelectedCountry] = useState(null);
     
 
     const handleActiveDisaster = (buttonClass) => {
         setActiveDisaster(buttonClass);
-        console.log("hi");
     };
 
+    const handlePolygonClick = (polygon, { lat, lng, altitude }) => {
+        setSelectedCountry(polygon.properties.ADMIN)
+    
+        world.current.pointOfView(
+          { lat, lng, altitude: world.current.pointOfView().altitude },
+          1000
+        );
+
+        setSpinCondition(false)
+        
+      };
+
     const [eventsData, setEventsData] = useState([])
+
+    const colorInterpolator = t => `rgba(255,100,50,${Math.sqrt(1-t)})`;
+
 
     const getData = async () => { 
         const res = await fetch('https://eonet.gsfc.nasa.gov/api/v2.1/events')
@@ -75,7 +90,7 @@ const Earth = () => {
 
     useEffect(() => {
         const updateDimensions = () => {
-            setEarthHeight(window.innerHeight * 0.8);
+            setEarthHeight(window.innerHeight);
             setEarthWidth(window.innerWidth); 
         };
 
@@ -95,6 +110,7 @@ const Earth = () => {
         propagationSpeed: (Math.random() - 0.5) * 20 + 1,
         repeatPeriod: Math.random() * 2000 + 200
     }));
+    
 
 
     const options = {
@@ -102,22 +118,30 @@ const Earth = () => {
       };
 
       const getPolygonCapColor = (coordinates) => {
+        if (coordinates.properties.ADMIN.includes(selectedCountry))
+            return "rgba(82, 121, 249, 0.3)"; 
+
         return coordinates === hoveredCountry ? "rgba(64,196,250, 0.2)" : "transparent";
     };
 
     useEffect(() => {
         world.current.controls().enableZoom = false;
 
-        if (hoveredCountry) {
-            world.current.controls().autoRotate = false;
-        } else {
-            world.current.controls().autoRotate = true;
-            world.current.controls().autoRotateSpeed = 1;
+
+        if (spinCondition){
+
+            if (hoveredCountry) {
+                world.current.controls().autoRotate = false;
+            } else {
+                world.current.controls().autoRotate = true;
+                world.current.controls().autoRotateSpeed = 1;
+            }
         }
+        
     }, [hoveredCountry]);
 
     const handleZoomInClick = () => {
-        if (!isZooming && zoomCount >= -3 && zoomCount < 3) {
+        if (!isZooming && zoomCount >= -4 && zoomCount < 4) {
           setIsZooming(true);
           world.current.pointOfView(
             { altitude: world.current.pointOfView().altitude - 0.35 },
@@ -132,7 +156,7 @@ const Earth = () => {
     };
 
     const handleZoomOutClick = () => {
-    if (!isZooming && zoomCount > -3 && zoomCount <= 3) {
+    if (!isZooming && zoomCount > -4 && zoomCount <= 4) {
         setIsZooming(true);
         world.current.pointOfView(
         { altitude: world.current.pointOfView().altitude + 0.35 },
@@ -232,6 +256,11 @@ const Earth = () => {
                 polygonLabel={({ properties: coordinates }) => {
                     return `<b>${coordinates.ADMIN} (${coordinates.ISO_A2})</b>`;
                 }}
+                onPolygonClick={(polygon, event, { lat, lng, altitude }) => {
+                   
+                      handlePolygonClick(polygon, { lat, lng, altitude });
+                    
+                  }}
                 options={options}
                 polygonSideColor={() => `rgba(0, 0, 0, 0)`}
                 
