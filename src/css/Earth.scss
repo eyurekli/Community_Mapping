@@ -8,6 +8,8 @@
     flex-direction: column;
 
     .earth-options{
+        position: absolute;
+        z-index: 9999;
         height: 10vh;
         background-color: transparent;
         width: 100vw;
@@ -45,7 +47,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 90vh;
+        height: 100vh;
     }
 
     .hovered-country{
