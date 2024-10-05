@@ -248,11 +248,6 @@ const Earth = () => {
                   }}
                 options={options}
                 polygonSideColor={() => `rgba(0, 0, 0, 0)`}
-                ringsData={gData}
-                ringColor={() => colorInterpolator}
-                ringMaxRadius="maxR"
-                ringPropagationSpeed="propagationSpeed"
-                ringRepeatPeriod="repeatPeriod"
                 
           />
         </div>
