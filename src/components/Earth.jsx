@@ -13,9 +13,11 @@ import { MdOutlineZoomIn } from "react-icons/md";
 import { MdOutlineZoomOut } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
 import { MdOutlineDarkMode } from "react-icons/md";
+import { MdOutlineLocationOn } from "react-icons/md";
 import { FaFire } from "react-icons/fa";
 import { FaVolcano } from "react-icons/fa6";
 import { FaPooStorm } from "react-icons/fa";
+
 
 
 
@@ -136,7 +138,22 @@ const Earth = () => {
     const handleGlobeImageLight = () => {
         setCurrGlobeImage("https://unpkg.com/three-globe@2.30.3/example/img/earth-blue-marble.jpg");   
     }
-      
+    
+    const handleLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    console.log('Latitude:', latitude, 'Longitude:', longitude);
+                },
+                (error) => {
+                    console.error('Error getting location:', error.message);
+                }
+            );
+        } else {
+            console.error('Geolocation is not supported by this browser.');
+        }
+    };
 
 
   return (
@@ -165,6 +182,7 @@ const Earth = () => {
                 <span onClick={handleZoomOutClick}><MdOutlineZoomOut className='icon'/></span>
                 <span onClick={handleGlobeImageLight}><MdOutlineLightMode className='icon'/></span>
                 <span onClick={handleGlobeImageDark}><MdOutlineDarkMode className='icon'/></span>
+                <span onClick={handleLocation}><MdOutlineLocationOn className='icon'/></span>
             </div>
            
 
