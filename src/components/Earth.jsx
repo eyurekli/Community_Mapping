@@ -18,6 +18,8 @@ import { FaFire } from "react-icons/fa";
 import { FaVolcano } from "react-icons/fa6";
 import { FaPooStorm } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
+import { IoCloseSharp } from "react-icons/io5";
+
 
 
 
@@ -41,6 +43,7 @@ const Earth = () => {
     const [activeDisaster, setActiveDisaster] = useState('');
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [fireEventsData, setFireEventsData] = useState([]);
+    const [volcanoData, setVolcanoData] = useState([]);
     const [stormEventsData, setStormEventsData] = useState([]);
     const [selectedFireEvent, setSelectedFireEvent] = useState(null);
     const [dashboardActive, setDashboardActive] = useState(true)
@@ -71,31 +74,73 @@ const Earth = () => {
 
     const colorInterpolator = t => `rgba(88, 82, 153,${Math.sqrt(1-t)})`;
 
-
-    const getAllData = async () => { 
-        const res = await fetch('https://eonet.gsfc.nasa.gov/api/v2.1/events');
+    const getVolcanoData = async () => {
+        const res = await fetch('https://eonet.gsfc.nasa.gov/api/v3/categories/volcanoes');
         const data = await res.json();
         
-        setEventsData(data.events);
-        
-        const fireEvents = data.events.filter(event => 
-            event.categories.some(category => category.title === 'Wildfires')
-        );
-
-        const formattedFireData = fireEvents.flatMap(event => 
-            event.geometries.map(geometry => ({
+        const formattedVolcanoData = data.events.flatMap(event =>
+            event.geometry.map(geometry => ({
                 lat: geometry.coordinates[1], 
-                lng: geometry.coordinates[0], 
-                intensity: Math.random()
+                lng: geometry.coordinates[0],
+                intensity: Math.random() 
             }))
         );
+    
+        setVolcanoData(formattedVolcanoData); 
+    };
+    
+    useEffect(() => {
+        getVolcanoData();
+    }, []);
 
-        setFireEventsData(formattedFireData);
+
+    const getFireData = async () => {
+        const res = await fetch('https://eonet.gsfc.nasa.gov/api/v3/categories/wildfires'); 
+        const data = await res.json();
+            
+        const formattedFireData = data.events.flatMap(event =>
+            event.geometry.map(geometry => ({
+                lat: geometry.coordinates[1],
+                lng: geometry.coordinates[0], 
+                intensity: Math.random() 
+            }))
+        );
+    
+        setFireEventsData(formattedFireData); 
+    };
+    
+    useEffect(() => {
+        getFireData();
+    }, []);
+
+    const getStormData = async () => {
+        const res = await fetch('https://eonet.gsfc.nasa.gov/api/v3/categories/severeStorms');
+        const data = await res.json();
+    
+        const formattedStormData = data.events.flatMap(event =>
+            event.geometry.map(geometry => ({
+                lat: geometry.coordinates[1], 
+                lng: geometry.coordinates[0],
+                maxR: Math.random() * 5 + 3, 
+                propagationSpeed: (Math.random() - 0.5) * 20 + 1, // Random propagation speed
+                repeatPeriod: Math.random() * 2000 + 200 // Random repeat period
+            }))
+        );
+    
+        setStormEventsData(formattedStormData);
     };
 
     useEffect(() => {
-        getAllData(); 
+        getStormData();
     }, []);
+
+    
+
+
+    
+    
+   
+   
 
     useEffect(() => {
         const updateDimensions = () => {
@@ -208,32 +253,57 @@ const Earth = () => {
         console.log("widhaiwbduwia");
     }
 
+    
+
   return (
     <div className='earth'>
 
         {dashboardActive && (
             <div className="dashboard">
-                <span className='x-button' onClick={handleDashboard}>X</span>
+                <span className='x-button' onClick={handleDashboard}><IoCloseSharp className='icon'/></span>
+                
+                <div className="dashboard-content">
+                    {selectedCountry ? ( 
+                        <div className="selectedCountry">
+                            <h1>Active Country</h1>
+                            <h2>{selectedCountry}</h2>
+                        </div>
+                    ) : (
+                        <div className="worldwide">  
+                            <p>Worldwide</p>
+                        </div>
+                    )}
+
+                    <button>Worldwide</button>
+
+                    <div className="disaster-options">
+                        <span 
+                            onClick={() => handleActiveDisaster('fire')}
+                        >
+                            <FaFire className={`icon ${activeDisaster === 'fire' ? 'fire' : ''}`}  />
+                        </span>
+                        <span 
+                            onClick={() => handleActiveDisaster('volcano')}
+                        >
+                            <FaVolcano  className={`icon ${activeDisaster === 'volcano' ? 'volcano' : ''}`}/>
+                        </span>
+                        <span 
+                            onClick={() => handleActiveDisaster('storm')}
+                        >
+                            <FaPooStorm className={`icon ${activeDisaster === 'storm' ? 'storm' : ''}`} />
+                        </span>
+                    </div>
+                        
+                </div>
+               
+                
+            
             </div>
         )}
         <div className="earth-options">
             <div className="disaster-options">
-            <span 
-                onClick={() => handleActiveDisaster('fire')}
-            >
-                <FaFire className={`icon ${activeDisaster === 'fire' ? 'fire' : ''}`}  />
-            </span>
-            <span 
-                onClick={() => handleActiveDisaster('volcano')}
-            >
-                <FaVolcano  className={`icon ${activeDisaster === 'volcano' ? 'volcano' : ''}`}/>
-            </span>
-            <span 
-                onClick={() => handleActiveDisaster('storm')}
-            >
-                <FaPooStorm className={`icon ${activeDisaster === 'storm' ? 'storm' : ''}`} />
-            </span>
-        </div>
+                
+            </div>
 
             <div className="earth-buttons">
                 <span onClick={handleZoomInClick}><MdOutlineZoomIn className='icon'/></span>
@@ -283,8 +353,11 @@ const Earth = () => {
                 options={options}
                 polygonSideColor={() => `rgba(0, 0, 0, 0)`}
                 
-                //Written by GPT
-                pointsData={activeDisaster === 'fire' ? fireEventsData : []}
+                pointsData={activeDisaster === 'fire' 
+                    ? fireEventsData 
+                    : activeDisaster === 'volcano' 
+                    ? volcanoData 
+                    : []}
                 pointLat={(d) => d.lat}
                 pointLng={(d) => d.lng}
                 pointColor={(d) => `rgba(255, 69, 0, ${Math.min(d.intensity + 0.3, 1)})`} 
@@ -295,6 +368,10 @@ const Earth = () => {
                     console.log('Point clicked:', point);
                     console.log('Coordinates:', { lat, lng, altitude });
                 }}
+                ringsData={activeDisaster === 'storm' ? stormEventsData : []} 
+                ringColor={() => colorInterpolator}
+                ringMaxRadius="maxR"
+                ringPropagationSpeed="propagationSpeed"
           />
         </div>
         

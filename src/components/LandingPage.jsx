@@ -22,7 +22,7 @@ function LandingPage({ onToggleDisplay }) {
     return (
         <div className="lanPage">
             <header>
-                <h2>WF Map</h2>
+                <h2>Natural Disaster Visualizer</h2>
                 <nav>
                     <ul>
                         <li>Home</li>
@@ -38,8 +38,7 @@ function LandingPage({ onToggleDisplay }) {
                 <p>Stay informed about wildfires around the world</p>
                 <div id="buttons">
                     <button onClick={onToggleDisplay}>Try Now</button>
-                    <button onClick={onToggleDisplay}>Local Threats</button>
-                    <button onClick={logUserCoordinates}>Get Location</button>
+                    <button onClick={logUserCoordinates}>Dangers Around Me</button>
                 </div>
             </section>       
                 
