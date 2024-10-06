@@ -111,6 +111,19 @@
         }
 
     }
+
+    .infoboard {
+        position: absolute;
+        height: 50%;
+        width: 20%;
+        top: 50%;
+        left: 0;
+        margin-left: 2rem;
+        transform: translateY(-70%);
+        background-color: rgb(205, 99, 69);
+        border-radius: 1rem;
+        z-index: 9999999;
+    }
     
 
     .earth-options{

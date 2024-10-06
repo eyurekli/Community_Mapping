@@ -47,6 +47,8 @@ const Earth = () => {
     const [stormEventsData, setStormEventsData] = useState([]);
     const [selectedFireEvent, setSelectedFireEvent] = useState(null);
     const [dashboardActive, setDashboardActive] = useState(true)
+    const [infoboardActive, setInfoboardActive] = useState(true)
+    const [userLocation, setUserLocation] = useState(null);
     
 
 
@@ -236,7 +238,9 @@ const Earth = () => {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-                    console.log('Latitude:', latitude, 'Longitude:', longitude);
+                    const location = 'Latitude: ' + latitude + ' Longitude: '+ longitude;
+                    console.log(location);
+                    setUserLocation(location);
                 },
                 (error) => {
                     console.error('Error getting location:', error.message);
@@ -248,12 +252,15 @@ const Earth = () => {
     };
 
 
-    const handleDashboard = (condition) => {
+    const handleDashboard = () => {
         setDashboardActive(!dashboardActive)
         console.log("widhaiwbduwia");
     }
 
-    
+    const handleInfoboard = () => {
+        setInfoboardActive(!infoboardActive)
+        console.log("arda guler arada guler");
+    }
 
   return (
     <div className='earth'>
@@ -367,6 +374,7 @@ const Earth = () => {
                 onPointClick={(point, event, { lat, lng, altitude }) => {
                     console.log('Point clicked:', point);
                     console.log('Coordinates:', { lat, lng, altitude });
+                    
                 }}
                 ringsData={activeDisaster === 'storm' ? stormEventsData : []} 
                 ringColor={() => colorInterpolator}
