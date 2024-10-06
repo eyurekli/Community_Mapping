@@ -47,7 +47,6 @@ const Earth = () => {
     const [stormEventsData, setStormEventsData] = useState([]);
     const [selectedFireEvent, setSelectedFireEvent] = useState(null);
     const [dashboardActive, setDashboardActive] = useState(true)
-    const [infoboardActive, setInfoboardActive] = useState(true)
     const [userLocation, setUserLocation] = useState(null);
     
 
@@ -263,11 +262,6 @@ const Earth = () => {
         console.log("widhaiwbduwia");
     }
 
-    const handleInfoboard = () => {
-        setInfoboardActive(!infoboardActive)
-        console.log("arda guler arada guler");
-    }
-
   return (
     <div className='earth'>
 
@@ -314,17 +308,6 @@ const Earth = () => {
             </div>
         )}
 
-        {infoboardActive && (
-            <div className="infoboard">
-                <span className='x-button' onClick={handleInfoboard}><IoCloseSharp className='icon'/></span>
-                
-                <div className="infoboard-content">
-                      <button onClick={handleLocation}>Get Your Location</button>
-                      {userLocation != null ? userLocation : null}
-                </div>
-            </div>
-        )}
-
         <div className="earth-options">
             <div className="disaster-options">
                 
@@ -335,7 +318,7 @@ const Earth = () => {
                 <span onClick={handleZoomOutClick}><MdOutlineZoomOut className='icon'/></span>
                 <span onClick={handleGlobeImageLight}><MdOutlineLightMode className='icon'/></span>
                 <span onClick={handleGlobeImageDark}><MdOutlineDarkMode className='icon'/></span>
-                <span onClick={() => { handleLocation(); handleInfoboard();}}><MdOutlineLocationOn className='icon'/></span>
+                <span onClick={handleLocation()}><MdOutlineLocationOn className='icon'/></span>
                 <span onClick={handleDashboard}><MdDashboard className='icon'/></span>
 
             </div>
