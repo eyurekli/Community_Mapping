@@ -240,7 +240,13 @@ const Earth = () => {
                     const { latitude, longitude } = position.coords;
                     const location = 'Latitude: ' + latitude + ' Longitude: '+ longitude;
                     console.log(location);
-                    setUserLocation(location);
+                    setUserLocation("Konum saptandi");
+
+                    world.current.pointOfView(
+                        { lat: latitude, lng: longitude, altitude: 0.3 },
+                        1000
+                      );
+
                 },
                 (error) => {
                     console.error('Error getting location:', error.message);
@@ -307,6 +313,18 @@ const Earth = () => {
             
             </div>
         )}
+
+        {infoboardActive && (
+            <div className="infoboard">
+                <span className='x-button' onClick={handleInfoboard}><IoCloseSharp className='icon'/></span>
+                
+                <div className="infoboard-content">
+                      <button onClick={handleLocation}>Get Your Location</button>
+                      {userLocation != null ? userLocation : null}
+                </div>
+            </div>
+        )}
+
         <div className="earth-options">
             <div className="disaster-options">
                 
@@ -317,7 +335,7 @@ const Earth = () => {
                 <span onClick={handleZoomOutClick}><MdOutlineZoomOut className='icon'/></span>
                 <span onClick={handleGlobeImageLight}><MdOutlineLightMode className='icon'/></span>
                 <span onClick={handleGlobeImageDark}><MdOutlineDarkMode className='icon'/></span>
-                <span onClick={handleLocation}><MdOutlineLocationOn className='icon'/></span>
+                <span onClick={() => { handleLocation(); handleInfoboard();}}><MdOutlineLocationOn className='icon'/></span>
                 <span onClick={handleDashboard}><MdDashboard className='icon'/></span>
 
             </div>
