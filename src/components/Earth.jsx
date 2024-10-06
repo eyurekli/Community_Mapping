@@ -34,6 +34,7 @@ import { FaHandHoldingWater } from "react-icons/fa";
 
 
 import "../css/Earth.scss"
+import { SiTrueup } from 'react-icons/si';
 
 const Earth = () => {
     const [earthHeight, setEarthHeight] = useState(0);
@@ -341,6 +342,7 @@ const Earth = () => {
     const handleWorldwide = () => {
         setSelectedCountry(null);
         setSelectedCountryPopulation("8,180,689,746");
+        setSpinCondition(true)
     }
 
     
