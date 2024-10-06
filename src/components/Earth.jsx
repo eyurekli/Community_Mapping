@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Globe from "react-globe.gl";
 import EarthImageDark from "../imgs/earthImage.jpg"
 import EarthImageLight from "../imgs/earthImageLight.jpg"
@@ -21,6 +21,8 @@ import { FaVolcano } from "react-icons/fa6";
 import { FaPooStorm } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { IoCloseSharp } from "react-icons/io5";
+import { FaHandHoldingWater } from "react-icons/fa";
+
 
 
 
@@ -56,6 +58,8 @@ const Earth = () => {
     const [loading, setLoading] = useState(true)
     const [dots, setDots] = useState('');
     const [selectedCountryPopulation, setSelectedCountryPopulation] = useState("8,180,689,746");
+    const [rise, setRise] = useState(false);
+
 
 
     useEffect(() => {
@@ -65,6 +69,10 @@ const Earth = () => {
 
         return () => clearTimeout(timer);
     }, []);
+
+    useEffect(() => {
+        setTimeout(() => setRise(true), 0.005);
+      }, []);
 
     useEffect(() => {
         if (loading) {
@@ -197,14 +205,26 @@ const Earth = () => {
     }, []);
 
 
-    const N = 10;
-    const gData = [...Array(N).keys()].map(() => ({
-        lat: (Math.random() - 0.5) * 180,
-        lng: (Math.random() - 0.5) * 360,
-        maxR: Math.random() * 20 + 3,
-        propagationSpeed: (Math.random() - 0.5) * 20 + 1,
-        repeatPeriod: Math.random() * 2000 + 200
-    }));
+    const N_PATHS = 100;
+    const MAX_POINTS_PER_LINE = 1000;
+    const MAX_STEP_DEG = 0.5;
+    const MAX_STEP_ALT = 0.015;
+    const gData = useMemo(() => [...Array(N_PATHS).keys()].map(() => {
+        let lat = (Math.random() - 0.5) * 90;
+        let lng = (Math.random() - 0.5) * 360;
+        let alt = 0;
+
+        return [[lat, lng, alt], ...[...Array(Math.round(Math.random() * MAX_POINTS_PER_LINE)).keys()].map(() => {
+          lat += (Math.random() * 2 - 1) * MAX_STEP_DEG;
+          lng += (Math.random() * 2 - 1) * MAX_STEP_DEG;
+          alt += (Math.random() * 2 - 1) * MAX_STEP_ALT;
+          alt = Math.max(0, alt);
+
+          return [lat, lng, alt];
+        })];
+      }),
+      []
+    );
     
 
     const options = {
@@ -277,6 +297,8 @@ const Earth = () => {
     }
     
     };
+
+    
 
     const handleGlobeImageDark = () => {
         setCurrGlobeImage(EarthImageDark); 
@@ -355,9 +377,13 @@ const Earth = () => {
                         <span onClick={() => handleActiveDisaster('volcano')}>
                             <FaVolcano className={`icon ${activeDisaster === 'volcano' ? 'volcano' : ''}`} />
                         </span>
+                        <span onClick={() => handleActiveDisaster('water')}>
+                            <FaHandHoldingWater className={`icon ${activeDisaster === 'water' ? 'water' : ''}`} />
+                        </span>
                         <span onClick={() => handleActiveDisaster('storm')}>
                             <FaPooStorm className={`icon ${activeDisaster === 'storm' ? 'storm' : ''}`} />
                         </span>
+                        
                     </div>
                 </div>
             </div>
@@ -432,6 +458,17 @@ const Earth = () => {
                 ringColor={() => colorInterpolator}
                 ringMaxRadius="maxR"
                 ringPropagationSpeed="propagationSpeed"
+                pathsData={activeDisaster === 'water' ? gData : []}
+                pathColor={() => [
+                    'rgba(0, 105, 148, 0.6)', 
+                    'rgba(0, 158, 217, 0.6)',  
+                    'rgba(173, 216, 230, 0.6)'
+                  ]}
+                pathDashLength={0.01}
+                pathDashGap={0.004}
+                pathDashAnimateTime={2}
+                pathPointAlt={rise ? pnt => 0.01 : undefined}
+                pathTransitionDuration={rise ? 1000 : undefined}
             />
         </div>
     </>
