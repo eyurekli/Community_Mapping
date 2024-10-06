@@ -7,6 +7,21 @@
     align-items: center;
     flex-direction: column;
 
+    .loader{
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        flex-direction: column;
+        gap: 1rem;
+
+        img{
+            object-fit: contain;
+            height: 18vh;
+        }
+    }
+
     .dashboard {
         position: absolute;
         height: 70%;
@@ -46,6 +61,22 @@
             margin-top: 4rem;
             display: flex;
             flex-direction: column;
+            align-items: center;
+
+            button{
+                margin-top: 4rem;
+                padding: 1rem;
+                transition: all 0.2s ease-in-out;
+                cursor: pointer;
+
+                &:hover{
+                    background: #1d4c9d;
+                    color: white;
+                    border: 1px solid black;
+                }
+            }
+
+
             
 
             .disaster-options{
@@ -103,10 +134,20 @@
                 h1{
                     text-decoration: underline;
                 }
+
+                span{
+                    color: greenyellow;
+                    font-weight: bold;
+                }
             }
 
             h1{
                 font-size: 1.5rem;
+            }
+
+            h2{
+                margin-top: 1rem;
+                font-size: 1rem;
             }
         }
 
@@ -165,6 +206,8 @@
         align-items: center;
         padding: 2rem;
         gap: 1rem;
+
+        
         
         .disaster-options{
             display: flex;

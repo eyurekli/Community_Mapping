@@ -6,6 +6,8 @@ import EarthImageDark from "../imgs/earthImage.jpg"
 import EarthImageLight from "../imgs/earthImageLight.jpg"
 import EarthBumpImage from "../imgs/earthbump.jpg"
 import EarthBackground from "../imgs/space.jpg"
+import planet from "../imgs/planet.jpg"
+
 import countriesData from "../Data/countries.json";
 import * as THREE from "three";
 import { FaArrowRotateLeft } from "react-icons/fa6";
@@ -48,7 +50,33 @@ const Earth = () => {
     const [selectedFireEvent, setSelectedFireEvent] = useState(null);
     const [dashboardActive, setDashboardActive] = useState(true)
     const [userLocation, setUserLocation] = useState(null);
-    
+    const [filteredFireEventsData, setFilteredFireEventsData] = useState([]);
+    const [filteredVolcanoData, setFilteredVolcanoData] = useState([]);
+    const [filteredStormEventsData, setFilteredStormEventsData] = useState([]);
+    const [loading, setLoading] = useState(true)
+    const [dots, setDots] = useState('');
+    const [selectedCountryPopulation, setSelectedCountryPopulation] = useState("8,180,689,746");
+
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 7000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        if (loading) {
+            const interval = setInterval(() => {
+                setDots(prev => (prev.length < 3 ? prev + '.' : ''));
+            }, 500);
+
+            return () => clearInterval(interval);
+        } else {
+            setDots(''); 
+        }
+    }, [loading]);
 
 
     const handleFireEventClick = (fireEvent) => {
@@ -61,11 +89,23 @@ const Earth = () => {
 
     const handlePolygonClick = (polygon, { lat, lng, altitude }) => {
         setSelectedCountry(polygon.properties.ADMIN)
+        setSelectedCountryPopulation(polygon.properties.POP_EST)
     
-        world.current.pointOfView(
-          { lat, lng, altitude: world.current.pointOfView().altitude },
-          1000
-        );
+        if (!loading){
+            world.current.pointOfView(
+                { lat, lng, altitude: world.current.pointOfView().altitude },
+                1000
+              );
+        }
+        
+
+        const countryName = polygon.properties.ADMIN; 
+
+        
+        
+        
+        
+        
 
         setSpinCondition(false)
         
@@ -123,8 +163,8 @@ const Earth = () => {
                 lat: geometry.coordinates[1], 
                 lng: geometry.coordinates[0],
                 maxR: Math.random() * 5 + 3, 
-                propagationSpeed: (Math.random() - 0.5) * 20 + 1, // Random propagation speed
-                repeatPeriod: Math.random() * 2000 + 200 // Random repeat period
+                propagationSpeed: (Math.random() - 0.5) * 20 + 1, 
+                repeatPeriod: Math.random() * 2000 + 200 
             }))
         );
     
@@ -179,10 +219,12 @@ const Earth = () => {
     };
 
     useEffect(() => {
-        world.current.controls().enableZoom = false;
+        if (!loading){
+            world.current.controls().enableZoom = false;
+        }
 
 
-        if (spinCondition){
+        if (spinCondition && !loading){
 
             if (hoveredCountry) {
                 world.current.controls().autoRotate = false;
@@ -194,13 +236,22 @@ const Earth = () => {
         
     }, [hoveredCountry]);
 
+    const extractCountryFromTitle = (title) => {
+        const parts = title.split(" in ");
+        return parts.length > 1 ? parts[1] : null; 
+    };
+
     const handleZoomInClick = () => {
-        if (!isZooming && zoomCount >= -4 && zoomCount < 4) {
+        if (!isZooming && zoomCount >= -6 && zoomCount < 6) {
           setIsZooming(true);
-          world.current.pointOfView(
-            { altitude: world.current.pointOfView().altitude - 0.35 },
-            500
-          );
+
+          if (!loading){
+            world.current.pointOfView(
+                { altitude: world.current.pointOfView().altitude - 0.35 },
+                500
+              );
+          }
+          
           setZoomCount(zoomCount + 1);
           setTimeout(() => {
             setIsZooming(false);
@@ -210,12 +261,15 @@ const Earth = () => {
     };
 
     const handleZoomOutClick = () => {
-    if (!isZooming && zoomCount > -4 && zoomCount <= 4) {
+    if (!isZooming && zoomCount > -6 && zoomCount <= 6) {
         setIsZooming(true);
-        world.current.pointOfView(
-        { altitude: world.current.pointOfView().altitude + 0.35 },
-        500
-        );
+
+        if (!loading){
+            world.current.pointOfView(
+            { altitude: world.current.pointOfView().altitude + 0.35 },
+            500
+            );
+        }
         setZoomCount(zoomCount - 1);
         setTimeout(() => {
         setIsZooming(false);
@@ -262,74 +316,69 @@ const Earth = () => {
         console.log("widhaiwbduwia");
     }
 
+    const handleWorldwide = () => {
+        setSelectedCountry(null);
+        setSelectedCountryPopulation("8,180,689,746");
+    }
+
+    
+
   return (
     <div className='earth'>
 
+        {loading ? (
+            <div className="loader">
+                <img src={planet}/>
+                <h1>Fetching Data{dots}</h1>
+            </div>
+        ) : (
+            <>
         {dashboardActive && (
             <div className="dashboard">
-                <span className='x-button' onClick={handleDashboard}><IoCloseSharp className='icon'/></span>
+                <span className='x-button' onClick={handleDashboard}>
+                    <IoCloseSharp className='icon' />
+                </span>
                 
                 <div className="dashboard-content">
-                    {selectedCountry ? ( 
-                        <div className="selectedCountry">
-                            <h1>Active Country</h1>
-                            <h2>{selectedCountry}</h2>
-                        </div>
-                    ) : (
-                        <div className="worldwide">  
-                            <p>Worldwide</p>
-                        </div>
-                    )}
+                    <div className="selectedCountry">
+                        <h1>Active Country</h1>
+                        <h2>{selectedCountry ? selectedCountry : 'Worldwide'}</h2>
+                        <h2>Population: <span>{selectedCountryPopulation}</span></h2>
+                    </div>
 
-                    <button>Worldwide</button>
+                    {selectedCountry && <button onClick={handleWorldwide}>Worldwide</button>}
 
                     <div className="disaster-options">
-                        <span 
-                            onClick={() => handleActiveDisaster('fire')}
-                        >
-                            <FaFire className={`icon ${activeDisaster === 'fire' ? 'fire' : ''}`}  />
+                        <span onClick={() => handleActiveDisaster('fire')}>
+                            <FaFire className={`icon ${activeDisaster === 'fire' ? 'fire' : ''}`} />
                         </span>
-                        <span 
-                            onClick={() => handleActiveDisaster('volcano')}
-                        >
-                            <FaVolcano  className={`icon ${activeDisaster === 'volcano' ? 'volcano' : ''}`}/>
+                        <span onClick={() => handleActiveDisaster('volcano')}>
+                            <FaVolcano className={`icon ${activeDisaster === 'volcano' ? 'volcano' : ''}`} />
                         </span>
-                        <span 
-                            onClick={() => handleActiveDisaster('storm')}
-                        >
+                        <span onClick={() => handleActiveDisaster('storm')}>
                             <FaPooStorm className={`icon ${activeDisaster === 'storm' ? 'storm' : ''}`} />
                         </span>
                     </div>
-                        
                 </div>
-               
-                
-            
             </div>
         )}
-
+        
         <div className="earth-options">
             <div className="disaster-options">
-                
             </div>
 
             <div className="earth-buttons">
-                <span onClick={handleZoomInClick}><MdOutlineZoomIn className='icon'/></span>
-                <span onClick={handleZoomOutClick}><MdOutlineZoomOut className='icon'/></span>
-                <span onClick={handleGlobeImageLight}><MdOutlineLightMode className='icon'/></span>
-                <span onClick={handleGlobeImageDark}><MdOutlineDarkMode className='icon'/></span>
-                <span onClick={handleLocation()}><MdOutlineLocationOn className='icon'/></span>
-                <span onClick={handleDashboard}><MdDashboard className='icon'/></span>
-
+                <span onClick={handleZoomInClick}><MdOutlineZoomIn className='icon' /></span>
+                <span onClick={handleZoomOutClick}><MdOutlineZoomOut className='icon' /></span>
+                <span onClick={handleGlobeImageLight}><MdOutlineLightMode className='icon' /></span>
+                <span onClick={handleGlobeImageDark}><MdOutlineDarkMode className='icon' /></span>
+                <span onClick={handleLocation}><MdOutlineLocationOn className='icon' /></span>
+                <span onClick={handleDashboard}><MdDashboard className='icon' /></span>
             </div>
-           
-
         </div>
 
         <div className="earth-container">
-            
-
-        <Globe
+            <Globe
                 ref={world}
                 className={`earth ${hoveredCountry != null ? 'hovered-country' : ''}`}             
                 height={earthHeight}
@@ -361,11 +410,13 @@ const Earth = () => {
                 options={options}
                 polygonSideColor={() => `rgba(0, 0, 0, 0)`}
                 
-                pointsData={activeDisaster === 'fire' 
-                    ? fireEventsData 
-                    : activeDisaster === 'volcano' 
-                    ? volcanoData 
-                    : []}
+                pointsData={
+                    selectedCountry === null 
+                    ? activeDisaster === 'fire' ? fireEventsData : 
+                    activeDisaster === 'volcano' ? volcanoData : []
+                    : activeDisaster === 'fire' ? filteredFireEventsData : 
+                    activeDisaster === 'volcano' ? filteredVolcanoData : []
+                }
                 pointLat={(d) => d.lat}
                 pointLng={(d) => d.lng}
                 pointColor={(d) => `rgba(255, 69, 0, ${Math.min(d.intensity + 0.3, 1)})`} 
@@ -381,8 +432,15 @@ const Earth = () => {
                 ringColor={() => colorInterpolator}
                 ringMaxRadius="maxR"
                 ringPropagationSpeed="propagationSpeed"
-          />
+            />
         </div>
+    </>
+)}
+
+            
+        
+        
+
         
         
     </div>
