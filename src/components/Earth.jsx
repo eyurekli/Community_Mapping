@@ -240,7 +240,7 @@ const Earth = () => {
                     const { latitude, longitude } = position.coords;
                     const location = 'Latitude: ' + latitude + ' Longitude: '+ longitude;
                     console.log(location);
-                    setUserLocation("Konum saptandi");
+                    setUserLocation("Location Found!");
 
                     world.current.pointOfView(
                         { lat: latitude, lng: longitude, altitude: 0.3 },
