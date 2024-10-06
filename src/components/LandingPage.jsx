@@ -34,8 +34,8 @@ function LandingPage({ onToggleDisplay }) {
             </header>
 
             <section className="info">
-                <h1>Community Wildfire Map</h1>
-                <p>Stay informed about wildfires around the world</p>
+                <h1>World Natural Disaster Visualizer</h1>
+                <p>Stay informed about disasters around the world and your community</p>
                 <div id="buttons">
                     <button onClick={onToggleDisplay}>Try Now</button>
                     <button onClick={logUserCoordinates}>Dangers Around Me</button>
