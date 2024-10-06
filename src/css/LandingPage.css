@@ -55,13 +55,13 @@ nav ul li:hover {
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   color: white; /* Text color for better contrast */
   text-align: center;
   padding: 20px;
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
   gap: 30px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
 
 .info p {
@@ -70,6 +70,7 @@ nav ul li:hover {
   
 .info h1 {
   font-size: 2em;
+  
 }
 
 #buttons {
