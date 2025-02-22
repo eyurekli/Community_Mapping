@@ -3,4 +3,5 @@
 ### Halifax Event 2nd Place - Nominated for Global Judging
 
  A natural disaster tracker by integrating real-time data with 3D globe visualization. Try it below!
-community-mapping-cyan.vercel.app 
+ 
+ https://community-mapping-cyan.vercel.app 
